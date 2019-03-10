@@ -1,0 +1,3 @@
+import Kinakomochi
+
+Kinakomochi.backup()
