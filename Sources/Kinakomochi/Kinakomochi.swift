@@ -47,6 +47,21 @@ public func backup() {
         return files
     }
     
+    func removableDirectories(in directory: String) throws -> [String] {
+        var directories = [String]()
+        let contents = try FileManager.default.contentsOfDirectory(atPath: directory)
+        for content in contents {
+            let path = directory.appending("/").appending(content)
+            if path.isDir {
+                let nestedContents = try FileManager.default.contentsOfDirectory(atPath: path)
+                    .map { path.appending("/").appending($0) }
+                    .filter { $0.isDir }
+                directories.append(contentsOf: nestedContents)
+            }
+        }
+        return directories
+    }
+    
     do {
         let files = try enumerateFiles(in: backupDirectory)
         let s3 = S3(accessKeyId: accessKeyId, secretAccessKey: secretAccessKey, region: .apnortheast1)
@@ -69,11 +84,14 @@ public func backup() {
                 continue
             }
             print("Upload Succeeded at \(file)")
+        }
+        let directories = try removableDirectories(in: backupDirectory)
+        for directory in directories {
             do {
-                try FileManager.default.removeItem(atPath: file)
-                print("Remove Succeeded at \(file)")
+                try FileManager.default.removeItem(atPath: directory)
+                 print("Remove Succeeded at \(directory)")
             } catch {
-                print("Remove Error at \(file)", error)
+                print("Remove Error at \(directory)")
             }
         }
     } catch {
