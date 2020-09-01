@@ -1,4 +1,4 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.2
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -9,13 +9,17 @@ let package = Package(
         .executable(name: "Run", targets: ["Run"])
     ],
     dependencies: [
-        .package(url: "https://github.com/swift-aws/aws-sdk-swift.git", from: "2.0.0")
+        .package(name: "AWSSDKSwift", url: "https://github.com/swift-aws/aws-sdk-swift.git", from: "4.0.0")
     ],
     targets: [
-        .target(name: "Run", dependencies: ["Kinakomochi"]),
-        .target(name: "Kinakomochi", dependencies: [
-            "S3"
+        .target(name: "Run", dependencies: [
+            .target(name: "Kinakomochi")
         ]),
-        .testTarget(name: "KinakomochiTests", dependencies: ["Kinakomochi"]),
+        .target(name: "Kinakomochi", dependencies: [
+            .product(name: "S3", package: "AWSSDKSwift"),
+        ]),
+        .testTarget(name: "KinakomochiTests", dependencies: [
+            .target(name: "Kinakomochi")
+        ]),
     ]
 )

@@ -76,9 +76,9 @@ public func backup() {
                 print("\(file) has invalid name")
                 continue
             }
-            let request = S3.PutObjectRequest(acl: .private, bucket: bucket, contentLength: Int64(data.count), key: key, body: data)
+            let request = S3.PutObjectRequest(acl: .private, body: data, bucket: bucket, contentLength: Int64(data.count), key: key)
             do {
-                _ = try s3.putObject(request)
+                _ = try s3.putObject(request).wait()
             } catch {
                 print("Upload Error at \(file)", error)
                 continue

@@ -107,6 +107,7 @@ iOSInjectionProject/
 Packages
 xcuserdata
 *.xcodeproj
+.swiftpm
 
 ### App ###
 .backup
